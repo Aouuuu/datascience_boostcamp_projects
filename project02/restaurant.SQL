@@ -1,0 +1,206 @@
+-- resturant database
+-- 5 tables
+-- write 5 queries
+-- 1x with
+-- 1x SUBQUERY
+-- 1X Aggregate Function
+
+.open restaurant.db
+
+DROP TABLE menus;
+DROP TABLE orders;
+DROP TABLE customers;
+DROP TABLE members;
+DROP TABLE payments;
+
+--CREATE TABLE & INSERT INTO
+
+CREATE TABLE menus (
+  menu_id INT NOT NULL,
+  menu_name TEXT NOT NULL,
+  menu_price INT NOT NULL,
+  menu_type TEXT NOT NULL,
+  PRIMARY KEY (menu_id)
+);
+
+INSERT INTO menus VALUES
+ (1,"American breakfast set",150,"Breakfast"),
+ (2,"Boiled rice",80,"Breakfast"),
+ (3,"Pasta",120,"Lunch"),
+ (4,"Noodle",120,"Lunch"),
+ (5,"Wagyu Steak",500,"Dinner"),
+ (6,"Osyter",400,"Dinner");
+
+
+ 
+CREATE TABLE orders (
+  order_id INT NOT NULL,
+  order_date TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  menu_id INT NOT NULL,
+  payment_id INT NOT NULL,
+  PRIMARY KEY (order_id),
+  FOREIGN KEY(menu_id) REFERENCES menus(menu_id),
+  FOREIGN KEY(customer_id) REFERENCES customers(customer_id),
+  FOREIGN KEY(payment_id) REFERENCES payments(payment_id)
+);
+
+INSERT INTO orders VALUES
+  (1, "2022-09-01", 1, 1,1),
+  (2, "2022-09-01", 1, 2,4),
+  (3, "2022-09-02", 5, 5,2),
+  (4, "2022-09-02", 3, 6,1),
+  (5, "2022-09-02", 9, 2,3),
+  (6, "2022-09-03", 6, 3,2),
+  (7, "2022-09-03", 4, 1,3),
+  (8, "2022-09-03", 4, 4,1),
+  (9, "2022-09-03", 8, 5,4),
+  (10, "2022-09-04", 8, 6,4),
+  (11, "2022-09-04", 2, 3,1),
+  (12, "2022-09-04", 2, 2,1),
+  (13, "2022-09-04", 7, 4,2),
+  (14, "2022-09-04", 7, 1,3),
+  (15, "2022-09-05", 10,6,2);
+
+
+
+CREATE TABLE customers (
+  customer_id INT NOT NULL,
+  customer_name TEXT NOT NULL,
+  customer_country TEXT NOT NULL,
+  member_level INT NOT NULL,
+  PRIMARY KEY (customer_id),
+  FOREIGN KEY(member_level) REFERENCES members(member_level)
+);
+
+INSERT INTO customers VALUES
+  (1,"Taryn Bauer","USA",1),
+  (2,"Rafael Sawyer","China",2),
+  (3,"Angeline Thornton","French",1),
+  (4,"Kierra Cisneros","USA",3),
+  (5,"Rosemary Mccann","Thailand",2),
+  (6,"Russell Friedman","England",1),
+  (7,"Journey Short","German",3),
+  (8,"Charlie Lindsey","USA",2),
+  (9,"Riley Reyes","USA",2),
+  (10,"Marquis Dixon","USA",3);
+
+
+  
+CREATE TABLE members (
+  member_level INT NOT NULL,
+  member_type TEXT NOT NULL,
+  discount_percent REAL NOT NULL,
+  PRIMARY KEY (member_level)
+);
+
+INSERT INTO members VALUES
+  (1,"Platinum",0.15),
+  (2,"Gold",0.10),
+  (3,"Silver",0.05);
+
+
+
+CREATE TABLE payments (
+  payment_id INT NOT NULL,
+  payment_type TEXT NOT NULL,
+  PRIMARY KEY (payment_id)
+);
+
+INSERT INTO payments VALUES
+  (1,"QR code"),
+  (2,"Credit card"),
+  (3,"Debit card"),
+  (4,"Cash");
+  
+.mode column
+.header on
+
+--1.How much revenue of each menu in September?
+.print " 1.How much revenue of each menu in September?"
+SELECT 
+  m.menu_name,
+  COUNT(m.menu_name) AS quantity,
+  m.menu_price AS price,
+  SUM(m.menu_price) AS revenue
+FROM orders AS o
+LEFT JOIN menus AS m
+ON o.menu_id = m. menu_id
+GROUP BY menu_name
+ORDER BY revenue DESC;
+
+--2.How much a final price that a customer pay for their meal?
+.print " 2.How much a final price that a customer pay for their meal?"
+WITH sub AS (
+  SELECT c.customer_id,c.customer_name, me.discount_percent
+  FROM customers AS c
+  LEFT JOIN members AS me
+  ON c.member_level = me.member_level
+)
+  
+SELECT 
+  customer_name,
+  SUM(m.menu_price) AS total_price,
+  SUM(m.menu_price)*sub.discount_percent AS total_discount,
+  SUM(m.menu_price) - (SUM(m.menu_price)*sub.discount_percent) AS final_price
+FROM orders AS o
+JOIN menus AS m ON o.menu_id = m. menu_id
+JOIN sub ON o.customer_id = sub.customer_id
+GROUP BY customer_name
+ORDER BY final_price DESC;
+
+-- 3.Which menu types have the most order in September by a customer that not have a first name begin with letter "R"?
+.print " 3.Which menu types have the most order in September by a customer that not have a first name begin with letter "R"?"
+SELECT 
+   m.menu_type,
+   COUNT(m.menu_type) AS number_of_order
+FROM orders AS o
+JOIN menus AS m ON o.menu_id = m. menu_id
+JOIN customers AS c ON o.customer_id = c.customer_id
+WHERE c.customer_name NOT LIKE 'R%'
+GROUP BY m.menu_type
+ORDER BY number_of_order DESC;
+
+-- 4.What is the payment term that a customer use the most and how much revenue caused by the said payment term?
+.print "4.What is the payment term that a customer use the most and how much revenue caused by the said payment term?"
+SELECT 
+      MAX(p.payment_type) AS peyment_method,
+      SUM(m.menu_price) AS revenue
+FROM orders AS o
+JOIN menus AS m ON o.menu_id = m. menu_id
+JOIN payments AS p ON o.payment_id = p.payment_id
+GROUP BY p.payment_type
+ORDER BY revenue DESC;
+
+--5. Create a segment of a customer divide into three sections (low buyer power,medium buyer power high buyer power) which refer to only one customer from each country.
+.print "5.Create a segment of a customer divide into three sections (low buyer power,medium buyer power high buyer power) which refer to only one customer from each country."  
+WITH sub AS (SELECT
+		ROW_NUMBER() OVER(PARTITION BY customer_country ORDER BY 
+    customer_name) AS row_num,
+    customer_id,
+		customer_name, 
+	  customer_country 
+	FROM customers
+  )
+
+SELECT
+  *,
+  CASE WHEN segment IN (1,2) THEN "low buyer power"
+	WHEN segment IN (4,5) THEN "high buyer power"
+	ELSE "medium buyer power"
+	END AS label_segment
+FROM (
+	SELECT 
+    sub.customer_country,
+		sub.customer_name,
+    m.menu_price,
+    NTILE(5) OVER(Order BY m.menu_price) AS segment
+	FROM orders AS o
+  JOIN menus AS m ON o.menu_id = m.menu_id 
+  JOIN sub ON o.customer_id = sub.customer_id
+  WHERE sub.row_num = 1
+  ORDER BY m.menu_price ASC
+  )
+GROUP BY customer_name 
+ORDER BY customer_country
+;
