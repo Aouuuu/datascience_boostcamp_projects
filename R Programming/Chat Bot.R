@@ -12,8 +12,6 @@ Overall, the AirBot uses user input, conditional statements, and string manipula
 
 Please visit Datalore (https://datalore.jetbrains.com/notebook/cizxdJHX4pwAETi2Qk5aNH/mqsVuVQm1fNRTmDqmUDpd0) to try air bot..
 
-```
-
 Airbot <- function() {
   # Introduction
   print("----------------")
@@ -96,5 +94,3 @@ Airbot <- function() {
 }
 
 Airbot()
-
-```
