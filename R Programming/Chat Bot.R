@@ -1,22 +1,16 @@
 The project provided is an implementation of an AirBot in R. The AirBot is designed to assist customers with flight bookings through a series of prompts and interactions. Here is a summary of the techniques used in the code:
 
 While Loop: The code utilizes a while (TRUE) loop to continuously prompt the user for input until they choose to exit the bot.
-
 User Input: The readline() function is used to capture user input. The bot asks for the user's request and validates the input to determine the appropriate action.
-
 Conditional Statements: The code uses conditional statements (if, else if, and else) to handle different user requests and execute corresponding actions based on the input.
-
 String Manipulation: The grepl() function is used to validate the format of user input, such as checking if a date string matches the specified format or if a booking number follows a specific pattern.
-
 Data Validation: The code validates the user's input against predefined criteria, such as checking if the origin, destination, or package class entered by the user is valid.
-
 Output: The print() function is used to display messages to the user at different stages of the interaction, providing confirmation of choices, booking details, cancellation notices, and upgrade information.
-
 Termination: The code provides an option for the user to exit the bot by typing "exit." The break statement is used to terminate the while loop and end the program.
 
 Overall, the AirBot uses user input, conditional statements, and string manipulation techniques to simulate a conversational interface for booking flights, canceling flights, and upgrading flight packages.
 
-Please visit Datalore(https://datalore.jetbrains.com/notebook/cizxdJHX4pwAETi2Qk5aNH/mqsVuVQm1fNRTmDqmUDpd0) to try.
+Please visit Datalore (https://datalore.jetbrains.com/notebook/cizxdJHX4pwAETi2Qk5aNH/mqsVuVQm1fNRTmDqmUDpd0) to try.
   
 Airbot <- function() {
   # Introduction
