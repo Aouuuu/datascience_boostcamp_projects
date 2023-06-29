@@ -17,14 +17,14 @@ This query creates a customer segmentation based on buyer power into three secti
 
 These queries provide insights into revenue, customer pricing, order patterns, payment preferences, and customer segmentation based on buyer power.
 
-```
-
 -- resturant database
 -- 5 tables
 -- write 5 queries
 -- 1x with
 -- 1x SUBQUERY
 -- 1X Aggregate Function
+
+```
 
 .open restaurant.db
 
