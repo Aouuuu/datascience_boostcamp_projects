@@ -16,6 +16,8 @@ Termination: The code provides an option for the user to exit the bot by typing 
 
 Overall, the AirBot uses user input, conditional statements, and string manipulation techniques to simulate a conversational interface for booking flights, canceling flights, and upgrading flight packages.
 
+Please visit Datalore(https://datalore.jetbrains.com/notebook/cizxdJHX4pwAETi2Qk5aNH/mqsVuVQm1fNRTmDqmUDpd0) to try.
+  
 Airbot <- function() {
   # Introduction
   print("----------------")
