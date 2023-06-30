@@ -1,6 +1,6 @@
 ---
-title: "Homework"
-author: "Jordan S."
+title: "Data visualize Project"
+author: "Sarach S."
 date: "Date: 2023-03-01"
 output:
   html_document: default
