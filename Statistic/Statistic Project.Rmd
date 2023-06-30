@@ -1,0 +1,109 @@
+---
+title: "Statistic Project"
+author: "Sarach S."
+date: "2023-03-08"
+output: html_document
+---
+
+## Hello Reader!
+
+This is markdown language. I've learned about a few topics in Statistic, such as:
+
+- Linear Regression
+- Logistic Regression
+- Confusion Metric
+- Model training
+
+In order to put what I've learned today into practice, I have explore into titanic data set and create some modeling to determine the modeling concept.
+
+### Let's explore what I discovered in the [Titanic](https://web.stanford.edu/class/archive/cs/cs109/cs109.1166/problem12.html) database together!
+
+The goal of this study is to identify which variable are significant to case a survived of people on titanic boat by using logistic regression.
+
+### Prepare a library 
+```{r message=FALSE, warning=FALSE}
+library(titanic)
+head(titanic_train)
+```
+
+### Clean data
+```{r message=FALSE, warning=FALSE}
+## convert Sex to factor
+titanic_train$Sex <- factor(titanic_train$Sex,
+                    levels = c("male", "female"),
+                    labels = c(1,0))
+
+## DROP NA (missing value)
+titanic_train <- na.omit(titanic_train)
+head(titanic_train)
+```
+
+### Split Data into Train Model and Test Model
+```{r message=FALSE, warning=FALSE}
+set.seed(11)
+n <- nrow(titanic_train)
+id <- sample(1:n, size = n*0.7) ## 70% train 30% set
+train_data <- titanic_train[id, ]
+test_data <- titanic_train[-id, ]
+```
+
+### Prepare Model and Summary 
+```{r message=FALSE, warning=FALSE}
+logis_model <- glm(Survived ~ Pclass + Sex + Age + Fare
+                   , data = train_data, family="binomial")
+
+summary(logis_model)
+```
+
+### Train model Performance
+```{r message=FALSE, warning=FALSE}
+## Train Model
+p_train <- predict(logis_model, type = "response") ## probability
+train_data$pred <- ifelse(p_train >= 0.5, 1, 0)
+
+## Accuracy
+## Confusion Metric
+conMT <- table(train_data$pred, train_data$Survived, 
+              dnn = c("Predicted", "Actual"))
+
+## Train Model Evaluation
+pre_train <- conMT[2,2]/(conMT[2,1] + conMT[2,2])
+rec_train <- conMT[2,2]/(conMT[1,2] + conMT[2,2])
+cat("Accuracy:", (conMT[1,1] + conMT[2,2])/sum(conMT),
+    "Presition:", conMT[2,2]/(conMT[2,1] + conMT[2,2]),
+    "Recall:", conMT[2,2]/(conMT[1,2] + conMT[2,2]),
+    "F1-score:", 2*((pre_train*rec_train)/(pre_train+rec_train)))
+```
+
+### Test model Performance
+```{r message=FALSE, warning=FALSE}
+## Test Model
+p_test <- predict(logis_model, newdata = test_data,type = "response") ## probability
+test_data$pred <- ifelse(p_test >= 0.5, 1, 0)
+
+## Accuracy
+## Confusion Metric
+conM <- table(test_data$pred, test_data$Survived, 
+              dnn = c("Predicted", "Actual"))
+
+## Test Model Evaluation
+pre_test <- conM[2,2]/(conM[2,1] + conM[2,2])
+rec_test <- conM[2,2]/(conM[1,2] + conM[2,2])
+cat("Accuracy:", (conM[1,1] + conM[2,2])/sum(conM),
+    "Presition:", conM[2,2]/(conM[2,1] + conM[2,2]),
+    "Recall:", conM[2,2]/(conM[1,2] + conM[2,2]),
+    "F1-score:", 2*((pre_test*rec_test)/(pre_test+rec_test)))
+```
+
+In terms of the test model performance, the following metrics were calculated:
+
+- Accuracy: The accuracy of the logistic regression model on the test data is 0.7953488. This indicates that approximately 79.53% of the predictions made by the model align with the actual survival outcomes in the test dataset.
+
+- Precision: The precision of the model is 0.6904762, which means that around 69.05% of the positive predictions (predicted survivors) made by the model are correct.
+
+- Recall: The recall, also known as sensitivity or true positive rate, is 0.7631579. This implies that approximately 76.32% of the actual survivors in the test dataset were correctly identified by the model.
+
+- F1-score: The F1-score is a measure that combines precision and recall into a single metric. It is calculated as 0.725 in this case. A higher F1-score indicates a better balance between precision and recall.
+
+In conclusion, based on the logistic regression model and the provided performance metrics, we can infer that Pclass, Sex, Age, and Fare are significant variables in predicting survival on the Titanic. However, for a more detailed and precise understanding of their impact, further analysis, including significance testing and interpretation of the coefficients, would be required.
+
