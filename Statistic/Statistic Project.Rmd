@@ -54,6 +54,19 @@ logis_model <- glm(Survived ~ Pclass + Sex + Age + Fare
 
 summary(logis_model)
 ```
+In terms of the variable performance the summary includes the estimates, standard errors, z-values, and p-values for each variable. Here's a breakdown of the variables and their significance:
+
+- (Intercept): The intercept term represents the baseline log-odds of survival when all other predictor variables are zero. In this case, the estimate is 2.287501 with a standard error of 0.635501. The z-value of 3.600 indicates that the intercept term is statistically significant (p-value = 0.000319). This suggests that the baseline log-odds of survival significantly differ from zero.
+
+- Pclass: The variable "Pclass" represents passenger class. The estimate is -1.128555, implying that as the passenger class increases, the log-odds of survival decrease. The associated standard error is 0.190216, and the z-value of -5.933 indicates that the variable is highly significant (p-value = 2.97e-09). This suggests that passenger class has a significant impact on the likelihood of survival.
+
+- Sex: The variable "Sex0" represents the gender of the passengers. The estimate is 2.527385, indicating that being female (coded as 0) is associated with higher log-odds of survival compared to males. The standard error is 0.246401, and the z-value of 10.257 indicates that the variable is highly significant (p-value < 2e-16). This suggests that gender is a significant predictor of survival, with females having a higher likelihood of survival compared to males.
+
+- Age: The variable "Age" represents the age of the passengers. The estimate is -0.038156, implying that as age increases, the log-odds of survival decrease. The standard error is 0.009122, and the z-value of -4.183 indicates that age is statistically significant (p-value = 2.88e-05). This suggests that age has a significant impact on the likelihood of survival.
+
+- Fare: The variable "Fare" represents the ticket fare paid by the passengers. The estimate is 0.001784, indicating a slight positive association between fare and log-odds of survival. However, the associated standard error is 0.002987, and the z-value of 0.597 suggests that fare is not statistically significant (p-value = 0.550348). This suggests that fare may not have a significant impact on survival, at least based on the available data and model.
+
+In summary, based on the estimates, standard errors, z-values, and p-values, we can conclude that Pclass, Sex, and Age are significant variables in predicting survival on the Titanic. The variable Fare, however, does not appear to be statistically significant in this model.
 
 ### Train model Performance
 ```{r message=FALSE, warning=FALSE}
